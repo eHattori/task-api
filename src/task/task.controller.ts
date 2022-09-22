@@ -7,6 +7,6 @@ export class TaskController {
   constructor(private taskService: TaskService){}
 
   @Get()
-  findAll(): Promise<ITask[]> {
+  find(): Promise<ITask[]> {
     return this.taskService.findByUser(1);  }
 }

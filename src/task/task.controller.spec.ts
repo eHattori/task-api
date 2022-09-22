@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
-import { DatabaseModule } from '../database/database.module';
-import { Task } from './task.entity';
+import { Task } from './task.model';
 import { SequelizeModule } from '@nestjs/sequelize';
 
 describe('TaskController', () => {
@@ -10,9 +9,15 @@ describe('TaskController', () => {
 
   beforeEach(async (): Promise<void> => {
     const app: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule, SequelizeModule.forFeature([Task])],
       controllers: [TaskController],
-      providers: [TaskService],
+      providers: [
+        {
+          provide: TaskService,
+          useValue: {
+            findByUser: jest.fn(() => []),
+          },
+        },
+      ],
     }).compile();
 
     controller = app.get<TaskController>(TaskController);
@@ -20,7 +25,7 @@ describe('TaskController', () => {
 
   describe('GET-> /tasks', () => {
     it('should return an array of tasks', async () => {
-      const result = await controller.findAll();
+      const result = await controller.find();
       expect(result !== null).toBeTruthy();
     });
   });

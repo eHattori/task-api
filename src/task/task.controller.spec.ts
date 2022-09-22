@@ -1,14 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskController } from './task.controller';
-import { DatabaseModule } from '../database/database.module';
 import { TaskService } from './task.service';
+import { DatabaseModule } from '../database/database.module';
+import { Task } from './task.entity';
+import { SequelizeModule } from '@nestjs/sequelize';
 
 describe('TaskController', () => {
   let controller: TaskController;
 
   beforeEach(async (): Promise<void> => {
     const app: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [DatabaseModule, SequelizeModule.forFeature([Task])],
       controllers: [TaskController],
       providers: [TaskService],
     }).compile();

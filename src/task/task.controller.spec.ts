@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
-import { Task } from './task.model';
-import { SequelizeModule } from '@nestjs/sequelize';
 
 describe('TaskController', () => {
   let controller: TaskController;

@@ -5,10 +5,25 @@ import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
+  const mockJwt = jest.fn();
+  const mockUser = jest.fn();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService, UserService, JwtService],
+      providers: [ AuthService,
+        {
+          provide: UserService,
+          useValue: {
+            findOne: mockUser,
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: mockJwt,
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);

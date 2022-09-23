@@ -3,11 +3,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TaskModule } from './task/task.module';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { SeederModule } from 'nestjs-sequelize-seeder';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
+    SeederModule.forRoot({
+      runOnlyIfTableIsEmpty: true,
+    }),
     SequelizeModule.forRoot({
       database: process.env.DB_DATABASE || 'task',
       username: process.env.DB_USER || 'root',

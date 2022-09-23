@@ -7,9 +7,12 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { jwtConstants } from './constants';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { User } from '../user/user.model';
 
 @Module({
   imports: [
+    SequelizeModule.forFeature([User]),
     UserModule,
     PassportModule,
     JwtModule.register({

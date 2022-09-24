@@ -23,4 +23,31 @@ describe('UserService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  describe('Permission User =>', () => {
+    const userTest = {
+      username: 'test',
+      manager: true,
+    };
+
+    it('should return true if manager user', () => {
+      const expectedResult = true;
+      expect(service.hasPermission(userTest)).toBe(expectedResult);
+    });
+
+    it('should return true if not manager user but the user try access the own resource', () => {
+      const expectedResult = true;
+      userTest.manager = false;
+
+      expect(service.hasPermission(userTest, userTest.username)).toBe(
+        expectedResult,
+      );
+    });
+    it('should return false if not manager user and is a different user', () => {
+      const expectedResult = false;
+      userTest.manager = false;
+
+      expect(service.hasPermission(userTest, 'otherUser')).toBe(expectedResult);
+    });
+  });
 });

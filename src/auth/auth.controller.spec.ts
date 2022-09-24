@@ -1,22 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '../user/user.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from '../user/user.model';
+import { UnauthorizedException } from '@nestjs/common';
+import { IUser } from 'src/user/user.interface';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  const mockService = jest.fn();
-
+  const mockLogin = jest.fn();
+  const mockProfile = jest.fn();
+  const user: IUser = {
+    username: 'hattori',
+    password: 'changeme',
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: AuthService,
           useValue: {
-            login: mockService,
+            login: mockLogin,
           },
         },
       ],
@@ -27,7 +29,10 @@ describe('AuthController', () => {
   });
 
   it('should be defined', () => {
-    mockService.mockReturnValue([]);
     expect(controller).toBeDefined();
   });
+
+  // it('should raise UnauthorizedException when not allowed', () => {
+  //   mockLogin.mockReturnValue(new UnauthorizedException());
+  //   expect(controller.login(user)).toBeCalled()  });
 });

@@ -7,6 +7,8 @@ export class UserService {
   constructor(@InjectModel(User) private userModel: typeof User) {}
 
   async findOne(username: string): Promise<User | undefined> {
-    return this.userModel.findOne({ where: { username: username } });
+    return this.userModel.findOne({
+      where: { username: username },
+    });
   }
 }

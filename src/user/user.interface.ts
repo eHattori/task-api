@@ -1,6 +1,7 @@
 interface IUser {
   username: string;
-  manager: boolean;
+  manager?: boolean;
+  password?: string;
 }
 
 export { IUser };

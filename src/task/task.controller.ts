@@ -56,9 +56,14 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() task: ITask, @Request() req) {
+  async create(@Body() task: ITask, @Request() req) {
     const user: IUser = req.user;
-    return this.taskService.create(task, user.username);
+    const newTask = await this.taskService.create(task, user.username);
+    if (!user.manager) {
+      this.userService.notifyManagers(newTask);
+    }
+
+    return newTask;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -86,7 +91,7 @@ export class TaskController {
     const user: IUser = req.user;
 
     const task = await this.taskService.findById(taskId);
-    if(!task){
+    if (!task) {
       throw new NotFoundException();
     }
     if (!task) {

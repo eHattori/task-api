@@ -7,6 +7,7 @@ import { Task } from './task.model';
 import { User } from '../user/user.model';
 import { ITask } from './task.interface';
 import { UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { Transport, ClientsModule } from '@nestjs/microservices';
 
 describe('TaskController', () => {
   let controller: TaskController;
@@ -16,6 +17,14 @@ describe('TaskController', () => {
   beforeEach(async (): Promise<void> => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [TaskController],
+      imports: [
+        ClientsModule.register([
+          {
+            name: 'PUB_SERVICE',
+            transport: Transport.REDIS,
+           },
+        ]),
+      ],
       providers: [
         TaskService,
         {
@@ -36,6 +45,7 @@ describe('TaskController', () => {
             findAll: jest.fn(() => []),
             save: jest.fn(),
             user: jest.fn(),
+            notifyManagers: jest.fn(),
           },
         },
         {

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/sequelize';
 import { UserService } from './user.service';
 import { User } from './user.model';
+import { Transport, ClientsModule } from '@nestjs/microservices';
 
 describe('UserService', () => {
   let service: UserService;
@@ -11,6 +12,14 @@ describe('UserService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ClientsModule.register([
+          {
+            name: 'PUB_SERVICE',
+            transport: Transport.REDIS,
+          },
+        ]),
+      ],
       providers: [
         UserService,
         { provide: getModelToken(User), useFactory: mockUserModel },

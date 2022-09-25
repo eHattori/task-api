@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Task } from './task.model';
 import { ITask } from './task.interface';
@@ -8,7 +8,7 @@ import { User } from '../user/user.model';
 export class TaskService {
   constructor(
     @InjectModel(Task) private taskModel: typeof Task,
-    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(User) private userModel: typeof User
   ) {}
 
   async findAll(): Promise<ITask[]> {

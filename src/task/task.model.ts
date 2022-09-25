@@ -1,13 +1,19 @@
-import { BelongsTo, Column, Model, Table, ForeignKey } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  Length,
+  Model,
+  Table,
+  ForeignKey,
+} from 'sequelize-typescript';
 import { User } from '../user/user.model';
 
 @Table
 export class Task extends Model {
+  
+  @Length({ max: 2500 })
   @Column
   summary: string;
-
-  @Column
-  date: Date;
 
   @ForeignKey(() => User)
   @Column

@@ -2,11 +2,15 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Put,
   UseGuards,
   Request,
   Query,
   UnauthorizedException,
+  NotFoundException,
+  Delete,
 } from '@nestjs/common';
 import { ITask } from './task.interface';
 import { TaskService } from './task.service';
@@ -23,13 +27,31 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  find(@Query('user') username: string, @Request() req) {
+  find(@Query('username') username: string, @Request() req) {
     const user: IUser = req.user;
     if (!this.userService.hasPermission(user, username)) {
       throw new UnauthorizedException();
     }
+    if (username) {
+      return this.taskService.findByUser(username);
+    } else {
+      return this.taskService.findAll();
+    }
+  }
 
-    return this.taskService.findByUser(username);
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
+  async findById(@Param('id') taskId: number, @Request() req) {
+    const user: IUser = req.user;
+    if (!this.userService.hasPermission(user)) {
+      throw new UnauthorizedException();
+    }
+
+    const task = await this.taskService.findById(taskId);
+    if (!task) {
+      throw new NotFoundException();
+    }
+    return task;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -37,5 +59,45 @@ export class TaskController {
   create(@Body() task: ITask, @Request() req) {
     const user: IUser = req.user;
     return this.taskService.create(task, user.username);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/:id')
+  async update(
+    @Body() task: ITask,
+    @Param('id') taskId: number,
+    @Request() req,
+  ) {
+    const user: IUser = req.user;
+    const oldTask = await this.taskService.findById(taskId);
+    if (!oldTask) {
+      throw new NotFoundException();
+    }
+    if (!this.userService.hasPermission(user, oldTask.user.username)) {
+      throw new UnauthorizedException();
+    }
+
+    return this.taskService.update(oldTask, task);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:id')
+  async delete(@Param('id') taskId: number, @Request() req) {
+    const user: IUser = req.user;
+
+    const task = await this.taskService.findById(taskId);
+    if(!task){
+      throw new NotFoundException();
+    }
+    if (!task) {
+      throw new NotFoundException();
+    }
+
+    if (!this.userService.hasPermission(user, task.user.username)) {
+      throw new UnauthorizedException();
+    }
+
+    this.taskService.delete(taskId);
+    return task;
   }
 }

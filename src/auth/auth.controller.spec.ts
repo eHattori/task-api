@@ -31,8 +31,4 @@ describe('AuthController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
-
-  // it('should raise UnauthorizedException when not allowed', () => {
-  //   mockLogin.mockReturnValue(new UnauthorizedException());
-  //   expect(controller.login(user)).toBeCalled()  });
 });

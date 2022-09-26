@@ -29,8 +29,6 @@ services:
       - db
       - redis
     command: /bin/bash -c 'npm install;  npm start'
-    ports:
-      - 3000:3000
   redis:
     image: redis:latest
     ports:

@@ -16,6 +16,7 @@ export class AuthService {
   ): Promise<IUser | undefined> {
     const user = await this.userService.findOne(username);
 
+
     if (await user?.validatePassword(password)) {
       const result: IUser = { username: user.username, manager: user.manager };
       return result;

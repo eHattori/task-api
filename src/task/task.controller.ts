@@ -25,13 +25,17 @@ export class TaskController {
     private userService: UserService,
   ) {}
 
+  private handlePermission(user: IUser, username?: string) {
+    if (!this.userService.hasPermission(user, username)) {
+      throw new UnauthorizedException();
+    }
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get()
   find(@Query('username') username: string, @Request() req) {
     const user: IUser = req.user;
-    if (!this.userService.hasPermission(user, username)) {
-      throw new UnauthorizedException();
-    }
+    this.handlePermission(user, username);
     if (username) {
       return this.taskService.findByUser(username);
     } else {
@@ -43,9 +47,7 @@ export class TaskController {
   @Get('/:id')
   async findById(@Param('id') taskId: number, @Request() req) {
     const user: IUser = req.user;
-    if (!this.userService.hasPermission(user)) {
-      throw new UnauthorizedException();
-    }
+    this.handlePermission(user);
 
     const task = await this.taskService.findById(taskId);
     if (!task) {
@@ -78,9 +80,7 @@ export class TaskController {
     if (!oldTask) {
       throw new NotFoundException();
     }
-    if (!this.userService.hasPermission(user, oldTask.user.username)) {
-      throw new UnauthorizedException();
-    }
+    this.handlePermission(user, oldTask.user.username);
 
     return this.taskService.update(oldTask, task);
   }
@@ -94,13 +94,8 @@ export class TaskController {
     if (!task) {
       throw new NotFoundException();
     }
-    if (!task) {
-      throw new NotFoundException();
-    }
 
-    if (!this.userService.hasPermission(user, task.user.username)) {
-      throw new UnauthorizedException();
-    }
+    this.handlePermission(user, task.user.username);
 
     this.taskService.delete(taskId);
     return task;

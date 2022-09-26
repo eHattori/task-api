@@ -73,6 +73,17 @@
     "typescript": "^4.7.4"
   },
   "jest": {
+    "coveragePathIgnorePatterns": [
+      ".interface.ts",
+      ".model.ts",
+      ".guard.ts",
+      "strategy.ts",
+      "module.ts",
+      "seeder.ts",
+      "constants.ts",
+      "main.ts"
+    ],
+
     "moduleFileExtensions": [
       "js",
       "json",

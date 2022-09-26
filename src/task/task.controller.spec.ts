@@ -13,6 +13,7 @@ describe('TaskController', () => {
   let controller: TaskController;
   let service;
   let taskModel;
+  let userService;
 
   beforeEach(async (): Promise<void> => {
     const app: TestingModule = await Test.createTestingModule({
@@ -40,12 +41,18 @@ describe('TaskController', () => {
         },
         UserService,
         {
+          provide: UserService,
+          useValue: {
+            hasPermission: jest.fn(()=> true),
+            notifyManagers: jest.fn(),
+          },
+        },
+        {
           provide: getModelToken(Task),
           useValue: {
             findAll: jest.fn(() => []),
             save: jest.fn(),
             user: jest.fn(),
-            notifyManagers: jest.fn(),
           },
         },
         {
@@ -59,8 +66,10 @@ describe('TaskController', () => {
 
     controller = app.get<TaskController>(TaskController);
     service = app.get(TaskService);
+    userService = app.get(UserService);
     taskModel = app.get(getModelToken(Task));
   });
+  
 
   describe('GET-> /tasks', () => {
     it('should return an array of tasks by user', async () => {
@@ -97,6 +106,16 @@ describe('TaskController', () => {
         });
       }).rejects.toThrow(NotFoundException);
     });
+
+    it('should throw a UnauthorizedException', async () => {
+      userService.hasPermission.mockReturnValue(false);
+
+      expect(async () => {
+        await controller.find('username', {
+          user: { manager: false, username: 'wrong_user' },
+        });
+      }).rejects.toThrow(UnauthorizedException);
+    });
   });
 
   describe('POST-> /tasks', () => {
@@ -109,6 +128,18 @@ describe('TaskController', () => {
         user: { manager: true, username: 'hattori' },
       });
       expect(result).toBeTruthy();
+    });
+
+    it('should call notify managers', async () => {
+      service.create.mockResolvedValue({ id: 1 });
+      const task: ITask = {
+        summary: 'text',
+      };
+      const result = await controller.create(task, {
+        user: { manager: false, username: 'tech_user' },
+      });
+      expect(result).toBeTruthy();
+      expect(userService.notifyManagers).toBeCalled();
     });
   });
 

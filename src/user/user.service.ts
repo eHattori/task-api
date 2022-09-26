@@ -23,7 +23,7 @@ export class UserService {
       where: { manager: true },
     });
     for (const manager of managers) {
-      const message = `The tech ${task.user.username} performed the task ${task.id} on date ${task.createdAt}`;
+      const message = `The tech ${task.user.username} performed the task ${task.id} on date ${task.date}`;
       await this.client.send({ type: 'event' }, message).toPromise();
     }
   }
